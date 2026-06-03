@@ -1,0 +1,2 @@
+# adilet
+jai bolashak ushin
