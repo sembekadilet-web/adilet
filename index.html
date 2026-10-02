@@ -1,0 +1,882 @@
+<!doctype html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6eee5">
+  <meta name="description" content="Анашымның туған күніне арналған жүрекжарды құттықтау.">
+  <title>Анашым, туған күніңізбен!</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #f6eee5;
+      --paper-light: #fffaf4;
+      --ink: #392a29;
+      --muted: #806b63;
+      --berry: #8e344b;
+      --berry-dark: #71283d;
+      --rose: #d78c91;
+      --gold: #b88a4a;
+      --line: rgba(105, 70, 59, .16);
+      --serif: Georgia, "Times New Roman", serif;
+      --sans: "Segoe UI", Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      overflow-x: hidden;
+      color: var(--ink);
+      background:
+        radial-gradient(ellipse at 11% 16%, rgba(222, 176, 153, .24), transparent 28rem),
+        radial-gradient(ellipse at 90% 83%, rgba(177, 128, 107, .13), transparent 25rem),
+        var(--paper);
+      font-family: var(--sans);
+    }
+
+    button { font: inherit; }
+
+    .page-shell {
+      position: relative;
+      display: flex;
+      min-height: 100svh;
+      flex-direction: column;
+      isolation: isolate;
+    }
+
+    .page-shell::before,
+    .page-shell::after {
+      position: fixed;
+      z-index: -1;
+      width: 25rem;
+      height: 25rem;
+      border: 1px solid rgba(142, 52, 75, .11);
+      border-radius: 50%;
+      content: "";
+      pointer-events: none;
+    }
+
+    .page-shell::before { top: -17rem; left: -12rem; }
+    .page-shell::after { right: -16rem; bottom: -18rem; }
+
+    .ambient {
+      position: fixed;
+      z-index: -1;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .glimmer {
+      position: absolute;
+      color: rgba(184, 138, 74, .7);
+      animation: glimmer 3.4s ease-in-out infinite;
+    }
+
+    .glimmer:nth-child(1) { top: 18%; left: 9%; font-size: 1.2rem; }
+    .glimmer:nth-child(2) { top: 32%; right: 11%; animation-delay: -1.2s; }
+    .glimmer:nth-child(3) { bottom: 21%; left: 15%; animation-delay: -2.1s; }
+    .glimmer:nth-child(4) { right: 18%; bottom: 14%; font-size: 1.3rem; animation-delay: -.6s; }
+
+    .topbar,
+    .footer {
+      display: flex;
+      width: min(100% - 3rem, 1160px);
+      align-items: center;
+      justify-content: space-between;
+      margin-inline: auto;
+    }
+
+    .topbar {
+      min-height: 88px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: .65rem;
+      color: var(--berry-dark);
+      font-family: var(--serif);
+      font-size: 1.05rem;
+      letter-spacing: .01em;
+      text-decoration: none;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 2rem;
+      height: 2rem;
+      place-items: center;
+      border: 1px solid rgba(142, 52, 75, .32);
+      border-radius: 50%;
+      color: var(--berry);
+      font-size: .9rem;
+    }
+
+    .top-note {
+      color: var(--muted);
+      font-size: .72rem;
+      letter-spacing: .17em;
+      text-transform: uppercase;
+    }
+
+    main {
+      display: grid;
+      flex: 1;
+      place-items: center;
+      padding: 4rem 1.5rem 5rem;
+    }
+
+    .welcome,
+    .letter {
+      width: min(100%, 780px);
+      text-align: center;
+      animation: arrive .8s both;
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .85rem;
+      margin: 0 0 1rem;
+      color: var(--gold);
+      font-size: .69rem;
+      font-weight: 700;
+      letter-spacing: .24em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before,
+    .eyebrow::after {
+      width: 2.2rem;
+      height: 1px;
+      background: currentColor;
+      content: "";
+    }
+
+    h1,
+    h2,
+    .letter-body,
+    .signoff {
+      font-family: var(--serif);
+      font-weight: 400;
+    }
+
+    .welcome h1 {
+      margin: 0;
+      color: var(--berry-dark);
+      font-size: clamp(2.55rem, 8vw, 5.3rem);
+      letter-spacing: -.055em;
+      line-height: 1.05;
+    }
+
+    .welcome-subtitle {
+      max-width: 28rem;
+      margin: 1.1rem auto 2.1rem;
+      color: var(--muted);
+      font-family: var(--serif);
+      font-size: clamp(1.05rem, 2.5vw, 1.25rem);
+      line-height: 1.65;
+    }
+
+    .envelope {
+      position: relative;
+      width: min(100%, 390px);
+      height: 218px;
+      margin: 0 auto 2rem;
+      filter: drop-shadow(0 20px 24px rgba(96, 57, 52, .13));
+    }
+
+    .envelope-back {
+      position: absolute;
+      inset: 18px 0 0;
+      overflow: hidden;
+      border: 1px solid rgba(118, 71, 63, .2);
+      border-radius: 8px;
+      background: #e8cdbb;
+    }
+
+    .envelope-back::before,
+    .envelope-back::after {
+      position: absolute;
+      bottom: -88px;
+      width: 0;
+      height: 0;
+      border-top: 130px solid #dfbda9;
+      content: "";
+    }
+
+    .envelope-back::before {
+      left: -2px;
+      border-right: 196px solid transparent;
+    }
+
+    .envelope-back::after {
+      right: -2px;
+      border-left: 196px solid transparent;
+    }
+
+    .envelope-letter {
+      position: absolute;
+      z-index: 1;
+      top: 0;
+      left: 8%;
+      display: grid;
+      width: 84%;
+      height: 170px;
+      place-items: center;
+      border: 1px solid rgba(118, 71, 63, .12);
+      border-radius: 5px;
+      background: var(--paper-light);
+      color: var(--berry);
+      font-family: var(--serif);
+      font-size: 2.7rem;
+      transition: transform .65s cubic-bezier(.2, .75, .25, 1);
+    }
+
+    .envelope-flap {
+      position: absolute;
+      z-index: 2;
+      inset: 18px 0 auto;
+      height: 112px;
+      transform-origin: top;
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+      background: #f0d9c9;
+      transition: transform .6s ease, opacity .35s ease;
+    }
+
+    .envelope-seal {
+      position: absolute;
+      z-index: 3;
+      top: 91px;
+      left: 50%;
+      display: grid;
+      width: 42px;
+      height: 42px;
+      transform: translateX(-50%);
+      place-items: center;
+      border: 1px solid rgba(255, 255, 255, .5);
+      border-radius: 50%;
+      background: var(--berry);
+      color: white;
+      font-size: 1.1rem;
+      transition: opacity .25s ease, transform .3s ease;
+    }
+
+    .welcome.is-opening .envelope-letter { transform: translateY(-70px); }
+    .welcome.is-opening .envelope-flap { transform: rotateX(180deg); opacity: 0; }
+    .welcome.is-opening .envelope-seal { transform: translate(-50%, 16px) scale(.7); opacity: 0; }
+
+    .open-button {
+      display: inline-flex;
+      min-height: 54px;
+      align-items: center;
+      justify-content: center;
+      gap: .75rem;
+      padding: .9rem 1.45rem;
+      border: 1px solid var(--berry);
+      border-radius: 999px;
+      background: var(--berry);
+      color: white;
+      cursor: pointer;
+      font-size: .9rem;
+      font-weight: 600;
+      letter-spacing: .015em;
+      transition: background .2s ease, box-shadow .2s ease, transform .2s ease;
+    }
+
+    .open-button:hover {
+      transform: translateY(-2px);
+      background: var(--berry-dark);
+      box-shadow: 0 9px 22px rgba(113, 40, 61, .2);
+    }
+
+    .open-button:focus-visible,
+    .brand:focus-visible {
+      outline: 3px solid var(--gold);
+      outline-offset: 4px;
+    }
+
+    .open-button:disabled { cursor: wait; opacity: .8; }
+    .button-arrow { font-size: 1.15rem; line-height: 1; }
+
+    .welcome-note {
+      margin: 1.5rem 0 0;
+      color: #a18a7d;
+      font-size: .75rem;
+      letter-spacing: .04em;
+    }
+
+    .letter {
+      width: min(100%, 760px);
+      padding: clamp(2rem, 6vw, 4.25rem);
+      border: 1px solid rgba(142, 52, 75, .17);
+      background:
+        linear-gradient(rgba(255, 250, 244, .94), rgba(255, 250, 244, .94)),
+        repeating-linear-gradient(0deg, transparent 0 38px, rgba(142, 52, 75, .08) 39px 40px);
+      box-shadow: 0 24px 70px rgba(85, 55, 48, .1);
+      text-align: left;
+      animation: letter-rise .8s cubic-bezier(.2, .75, .25, 1) both;
+    }
+
+    .letter-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: clamp(2.1rem, 5vw, 3.4rem);
+      padding-bottom: 1.2rem;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .letter-top .eyebrow {
+      justify-content: flex-start;
+      margin: 0;
+    }
+
+    .letter-top .eyebrow::after { display: none; }
+
+    .letter-flower {
+      color: var(--rose);
+      font-size: 1.7rem;
+    }
+
+    .letter h2 {
+      margin: 0 0 1.55rem;
+      color: var(--berry-dark);
+      font-size: clamp(2.15rem, 6vw, 3.6rem);
+      letter-spacing: -.045em;
+      line-height: 1.12;
+    }
+
+    .letter-body {
+      color: #594541;
+      font-size: clamp(1.08rem, 2.6vw, 1.23rem);
+      line-height: 1.9;
+    }
+
+    .letter-body p { margin: 0 0 1.15rem; }
+    .letter-body strong { color: var(--berry); font-weight: 400; }
+
+    .wish {
+      margin: 2rem 0;
+      padding: 1.25rem 1.4rem;
+      border-left: 2px solid var(--gold);
+      background: rgba(231, 207, 185, .25);
+      color: var(--berry-dark);
+      font-size: 1.1em;
+      font-style: italic;
+    }
+
+    .signoff {
+      margin: 2rem 0 0;
+      color: var(--berry-dark);
+      font-size: 1.25rem;
+      line-height: 1.6;
+    }
+
+    .signoff span {
+      display: block;
+      color: var(--muted);
+      font-size: .9rem;
+      font-style: italic;
+    }
+
+    .letter-heart {
+      display: block;
+      margin-top: 2.2rem;
+      color: var(--rose);
+      font-size: 1.35rem;
+      text-align: center;
+      animation: heartbeat 1.6s ease-in-out infinite;
+    }
+
+    .afterglow {
+      width: min(100%, 840px);
+      margin: clamp(3rem, 9vw, 6rem) auto 0;
+      padding: clamp(2rem, 5vw, 3.5rem);
+      border: 1px solid rgba(142, 52, 75, .14);
+      border-radius: 220px 220px 12px 12px;
+      background: rgba(255, 250, 244, .57);
+      text-align: center;
+      animation: arrive 1s .2s both;
+    }
+
+    .afterglow h2 {
+      margin: 0;
+      color: var(--berry-dark);
+      font-family: var(--serif);
+      font-size: clamp(2rem, 5vw, 3.4rem);
+      font-weight: 400;
+      letter-spacing: -.04em;
+    }
+
+    .afterglow-intro {
+      max-width: 32rem;
+      margin: .8rem auto 2rem;
+      color: var(--muted);
+      font-family: var(--serif);
+      font-size: 1.08rem;
+      line-height: 1.7;
+    }
+
+    .wish-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: .8rem;
+      text-align: left;
+    }
+
+    .wish-card {
+      min-height: 150px;
+      padding: 1.2rem;
+      border: 1px solid rgba(142, 52, 75, .15);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .62);
+      color: var(--ink);
+      cursor: pointer;
+      text-align: left;
+      transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+    }
+
+    .wish-card:hover,
+    .wish-card:focus-visible {
+      transform: translateY(-5px);
+      border-color: rgba(142, 52, 75, .38);
+      box-shadow: 0 12px 25px rgba(85, 55, 48, .09);
+    }
+
+    .wish-card:focus-visible,
+    .candle-button:focus-visible {
+      outline: 3px solid var(--gold);
+      outline-offset: 3px;
+    }
+
+    .wish-icon {
+      display: block;
+      margin-bottom: .8rem;
+      color: var(--rose);
+      font-size: 1.4rem;
+    }
+
+    .wish-label {
+      display: block;
+      color: var(--berry-dark);
+      font-family: var(--serif);
+      font-size: 1.15rem;
+    }
+
+    .wish-reveal {
+      display: block;
+      max-height: 0;
+      overflow: hidden;
+      color: var(--muted);
+      font-size: .85rem;
+      line-height: 1.6;
+      opacity: 0;
+      transition: max-height .4s ease, opacity .35s ease, margin .35s ease;
+    }
+
+    .wish-card.is-open .wish-reveal {
+      max-height: 9rem;
+      margin-top: .65rem;
+      opacity: 1;
+    }
+
+    .cake-surprise {
+      margin-top: 3rem;
+      padding-top: 2.2rem;
+      border-top: 1px solid var(--line);
+    }
+
+    .cake {
+      position: relative;
+      width: 200px;
+      height: 140px;
+      margin: 2rem auto 1.6rem;
+      animation: cake-bob 3.5s ease-in-out infinite;
+    }
+
+    .cake-plate {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 200px;
+      height: 14px;
+      border-radius: 50%;
+      background: linear-gradient(#e8cdbb, #cda891);
+    }
+
+    .cake-base {
+      position: absolute;
+      bottom: 9px;
+      left: 22px;
+      width: 156px;
+      height: 57px;
+      border: 1px solid rgba(113, 40, 61, .13);
+      border-radius: 9px 9px 14px 14px;
+      background: linear-gradient(90deg, #e8b6a7, #f4d5c5 48%, #e7b2a4);
+      box-shadow: inset 0 -11px rgba(142, 52, 75, .12);
+    }
+
+    .cake-top {
+      position: absolute;
+      bottom: 57px;
+      left: 22px;
+      width: 156px;
+      height: 25px;
+      border-radius: 50%;
+      background: #fff0df;
+    }
+
+    .cake-top::after {
+      position: absolute;
+      right: 23px;
+      bottom: -10px;
+      width: 11px;
+      height: 17px;
+      border-radius: 0 0 9px 9px;
+      background: #fff0df;
+      box-shadow: -39px 2px #fff0df, 38px 0 #fff0df;
+      content: "";
+    }
+
+    .candle {
+      position: absolute;
+      z-index: 1;
+      bottom: 78px;
+      left: 93px;
+      width: 14px;
+      height: 45px;
+      border-radius: 4px 4px 1px 1px;
+      background: repeating-linear-gradient(135deg, #fff9ec 0 6px, #d78c91 6px 11px);
+    }
+
+    .flame {
+      position: absolute;
+      top: -21px;
+      left: 3px;
+      width: 9px;
+      height: 17px;
+      transform-origin: 50% 100%;
+      border-radius: 60% 40% 55% 45%;
+      background: #f0b64e;
+      box-shadow: 0 0 18px rgba(240, 182, 78, .75);
+      animation: candle-flicker .75s ease-in-out infinite alternate;
+    }
+
+    .candle.is-out .flame { animation: candle-out .55s ease forwards; }
+
+    .candle-button {
+      min-height: 46px;
+      padding: .7rem 1.25rem;
+      border: 1px solid rgba(142, 52, 75, .5);
+      border-radius: 999px;
+      background: transparent;
+      color: var(--berry-dark);
+      cursor: pointer;
+      font-size: .88rem;
+      transition: background .2s ease, color .2s ease;
+    }
+
+    .candle-button:hover { background: var(--berry); color: white; }
+
+    .cake-wish {
+      min-height: 3.4rem;
+      margin: 1rem auto 0;
+      color: var(--berry-dark);
+      font-family: var(--serif);
+      font-size: clamp(1.1rem, 3vw, 1.4rem);
+      line-height: 1.6;
+    }
+
+    .floating-heart {
+      position: fixed;
+      z-index: 6;
+      bottom: 15vh;
+      left: var(--left);
+      color: var(--petal-color);
+      font-size: var(--size);
+      pointer-events: none;
+      animation: heart-rise var(--duration) ease-out forwards;
+    }
+
+    .footer {
+      min-height: 66px;
+      border-top: 1px solid var(--line);
+      color: #9a8277;
+      font-family: var(--serif);
+      font-size: .85rem;
+    }
+
+    .footer-ornament { color: var(--rose); letter-spacing: .4em; }
+
+    .petal {
+      position: fixed;
+      z-index: 5;
+      top: -2rem;
+      left: var(--left);
+      color: var(--petal-color);
+      font-size: var(--size);
+      pointer-events: none;
+      animation: petal-fall var(--duration) ease-in forwards;
+    }
+
+    [hidden] { display: none !important; }
+
+    @keyframes arrive {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes letter-rise {
+      from { opacity: 0; transform: translateY(24px) scale(.985); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes petal-fall {
+      0% { opacity: 0; transform: translate3d(0, -5vh, 0) rotate(0); }
+      10% { opacity: .95; }
+      100% { opacity: 0; transform: translate3d(var(--drift), 110vh, 0) rotate(720deg); }
+    }
+
+    @keyframes glimmer {
+      0%, 100% { opacity: .25; transform: scale(.7) rotate(0); }
+      50% { opacity: 1; transform: scale(1.2) rotate(25deg); }
+    }
+
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      14% { transform: scale(1.25); }
+      28% { transform: scale(1); }
+      42% { transform: scale(1.16); }
+      70% { transform: scale(1); }
+    }
+
+    @keyframes cake-bob {
+      0%, 100% { transform: translateY(0) rotate(-1deg); }
+      50% { transform: translateY(-7px) rotate(1deg); }
+    }
+
+    @keyframes candle-flicker {
+      from { transform: rotate(-4deg) scale(.95); }
+      to { transform: rotate(4deg) scale(1.08); }
+    }
+
+    @keyframes candle-out {
+      to { opacity: 0; transform: translateY(-15px) scale(.2); }
+    }
+
+    @keyframes heart-rise {
+      from { opacity: 0; transform: translateY(0) scale(.6) rotate(-12deg); }
+      15% { opacity: 1; }
+      to { opacity: 0; transform: translateY(-80vh) scale(1.2) rotate(18deg); }
+    }
+
+    @media (max-width: 600px) {
+      .topbar,
+      .footer { width: min(100% - 2rem, 1160px); }
+      .topbar { min-height: 72px; }
+      .top-note { max-width: 8rem; font-size: .58rem; text-align: right; }
+      main { padding: 3rem 1rem; }
+      .envelope { height: 195px; }
+      .envelope-back { top: 14px; }
+      .envelope-flap { top: 14px; }
+      .envelope-seal { top: 82px; }
+      .envelope-letter { height: 155px; }
+      .envelope-back::before,
+      .envelope-back::after { bottom: -82px; }
+      .envelope-back::before { border-top-width: 124px; border-right-width: 50vw; }
+      .envelope-back::after { border-top-width: 124px; border-left-width: 50vw; }
+      .letter { padding: 1.65rem 1.3rem; }
+      .letter-top { margin-bottom: 2rem; }
+      .afterglow { padding: 2.4rem 1.2rem; border-radius: 140px 140px 12px 12px; }
+      .wish-cards { grid-template-columns: 1fr; }
+      .wish-card { min-height: 0; }
+      .wish-reveal { max-height: 0; }
+      .footer { font-size: .75rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-shell">
+    <div class="ambient" aria-hidden="true">
+      <span class="glimmer">✧</span>
+      <span class="glimmer">✦</span>
+      <span class="glimmer">✧</span>
+      <span class="glimmer">✦</span>
+    </div>
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Беттің басына қайту">
+        <span class="brand-mark" aria-hidden="true">✿</span>
+        <span>Анашым, туған күніңізбен!</span>
+      </a>
+      <span class="top-note">Жүректен шыққан бір хат</span>
+    </header>
+
+    <main>
+      <section class="welcome" id="welcome" aria-labelledby="welcome-title">
+        <p class="eyebrow">Бүгінгі күн — ерекше күн</p>
+        <h1 id="welcome-title">Анашым, бұл хат<br>Сізге арналады</h1>
+        <p class="welcome-subtitle">Айтылмай қалған алғыс пен шексіз махаббат — осы кішкентай сыйлықтың ішінде.</p>
+
+        <div class="envelope" aria-hidden="true">
+          <div class="envelope-back"></div>
+          <div class="envelope-letter">Анашыма</div>
+          <div class="envelope-flap"></div>
+          <div class="envelope-seal">♥</div>
+        </div>
+
+        <button class="open-button" id="open-letter" type="button">
+          <span>Жүрек сөзін ашу</span>
+          <span class="button-arrow" aria-hidden="true">↗</span>
+        </button>
+        <p class="welcome-note">Асықпай ашыңыз — бұл хат махаббатпен жазылды</p>
+      </section>
+
+      <article class="letter" id="letter" aria-labelledby="letter-title" hidden>
+        <div class="letter-top">
+          <p class="eyebrow">Ең аяулы жанға</p>
+          <span class="letter-flower" aria-hidden="true">✿</span>
+        </div>
+        <h2 id="letter-title" tabindex="-1">Анашым, туған күніңізбен!</h2>
+        <div class="letter-body">
+          <p>Сізге деген алғысымды бір хатқа сыйғызу мүмкін емес шығар. Бірақ бүгін жүрегімдегі ең маңызды сөзді айтқым келеді: <strong>менің өмірімдегі ең үлкен бақтың бірі — Сіздің перзентіңіз болғаным.</strong></p>
+          <p>Сіз мені өмірге әкеліп қана қоймай, мейіріммен өмір сүруді, жақсылыққа сенуді, құлаған кезде қайта тұруды үйреттіңіз. Кейде бір ауыз жылы сөзіңіз бүкіл әлемді орнына келтіргендей болады. Құшағыңыз — мен үшін әрдайым ең қауіпсіз мекен.</p>
+          <p>Анашым, қанша жасқа келсем де, Сіздің балаңыз болып қала беремін. Ал Сіздің даусыңыз бен ақ тілегіңіз маған қай жолда жүрсем де күш береді. <strong>Бар болғаныңыз үшін, бар мейіріміңіз үшін мың алғыс.</strong></p>
+          <p>Жаңа жасыңыз жүрегіңіз қалаған қуаныштарға толсын. Деніңіз сау, көңіліңіз тыныш, жүзіңіз күлкіге толы болсын. Өзіңіз өзгеге сыйлаған жылулық пен жақсылықтың бәрі еселеп өзіңізге қайтсын.</p>
+          <p class="wish">Бізге сыйлаған махаббатыңыз өзіңізге еселеп қайтсын. Сіз ең бақытты болуға лайықсыз!</p>
+          <p>Бүгін ғана емес, әр күніңізде қадірлі, аяулы, шексіз сүйікті екеніңізді сезініңіз.</p>
+        </div>
+        <p class="signoff">Туған күніңіз құтты болсын!<span>Сізді шексіз жақсы көретін балаңыздан</span></p>
+        <span class="letter-heart" aria-hidden="true">♥</span>
+      </article>
+
+      <section class="afterglow" id="afterglow" aria-labelledby="afterglow-title" hidden>
+        <p class="eyebrow">Сізге арналған кішкентай ғажайып</p>
+        <h2 id="afterglow-title">Жүрегіңізге жақын сөздер</h2>
+        <p class="afterglow-intro">Әр гүлдің ішінде Сізге деген бір алғыс бар. Ашып көріңіз, Анашым.</p>
+
+        <div class="wish-cards">
+          <button class="wish-card" type="button" aria-expanded="false">
+            <span class="wish-icon" aria-hidden="true">❀</span>
+            <span class="wish-label">Мейіріміңіз</span>
+            <span class="wish-reveal">Сіздің мейіріміңізден мен адамға жылу сыйлауды үйрендім.</span>
+          </button>
+          <button class="wish-card" type="button" aria-expanded="false">
+            <span class="wish-icon" aria-hidden="true">✧</span>
+            <span class="wish-label">Ақ батаңыз</span>
+            <span class="wish-reveal">Әр қадамымда Сіздің ақ тілегіңіз жанымда екенін сеземін.</span>
+          </button>
+          <button class="wish-card" type="button" aria-expanded="false">
+            <span class="wish-icon" aria-hidden="true">♡</span>
+            <span class="wish-label">Орныңыз</span>
+            <span class="wish-reveal">Сіздің орныңызды ешкім баса алмайды. Сіз — менің ең аяулы жанымсыз.</span>
+          </button>
+        </div>
+
+        <div class="cake-surprise">
+          <p class="eyebrow">Тағы бір тілек тілеңіз</p>
+          <div class="cake" aria-hidden="true">
+            <div class="cake-plate"></div>
+            <div class="cake-base"></div>
+            <div class="cake-top"></div>
+            <div class="candle" id="candle"><span class="flame"></span></div>
+          </div>
+          <button class="candle-button" id="blow-candle" type="button">Шырақты өшіру</button>
+          <p class="cake-wish" id="cake-wish" aria-live="polite"></p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>Махаббатпен, бүгін және әрдайым</span>
+      <span class="footer-ornament" aria-hidden="true">✿ · ✿</span>
+    </footer>
+  </div>
+
+  <div id="petal-layer" aria-hidden="true"></div>
+
+  <script>
+    const openButton = document.querySelector("#open-letter");
+    const welcome = document.querySelector("#welcome");
+    const letter = document.querySelector("#letter");
+    const letterTitle = document.querySelector("#letter-title");
+    const afterglow = document.querySelector("#afterglow");
+    const petalLayer = document.querySelector("#petal-layer");
+    const candle = document.querySelector("#candle");
+    const blowButton = document.querySelector("#blow-candle");
+    const cakeWish = document.querySelector("#cake-wish");
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    function scatterSymbols(symbol, count, className, colors) {
+      if (reducedMotion.matches) return;
+      for (let i = 0; i < count; i += 1) {
+        const particle = document.createElement("span");
+        particle.className = className;
+        particle.textContent = symbol;
+        particle.style.setProperty("--left", `${Math.random() * 100}%`);
+        particle.style.setProperty("--drift", `${Math.random() * 180 - 90}px`);
+        particle.style.setProperty("--duration", `${2.8 + Math.random() * 2.2}s`);
+        particle.style.setProperty("--size", `${.8 + Math.random() * 1.1}rem`);
+        particle.style.setProperty("--petal-color", colors[i % colors.length]);
+        particle.addEventListener("animationend", () => particle.remove(), { once: true });
+        petalLayer.append(particle);
+      }
+    }
+
+    function scatterPetals() {
+      const colors = ["#b95568", "#d78c91", "#c49a5b", "#a65b67"];
+      scatterSymbols("✿", 28, "petal", colors);
+    }
+
+    openButton.addEventListener("click", () => {
+      openButton.disabled = true;
+      welcome.classList.add("is-opening");
+      scatterPetals();
+
+      window.setTimeout(() => {
+        welcome.hidden = true;
+        letter.hidden = false;
+        afterglow.hidden = false;
+        letterTitle.focus({ preventScroll: true });
+        letter.scrollIntoView({ behavior: reducedMotion.matches ? "auto" : "smooth", block: "center" });
+      }, reducedMotion.matches ? 0 : 560);
+    });
+
+    document.querySelectorAll(".wish-card").forEach((card) => {
+      card.addEventListener("click", () => {
+        const isOpen = card.classList.toggle("is-open");
+        card.setAttribute("aria-expanded", String(isOpen));
+        if (isOpen) scatterSymbols("♥", 5, "floating-heart", ["#b95568", "#d78c91", "#c49a5b"]);
+      });
+    });
+
+    blowButton.addEventListener("click", () => {
+      if (candle.classList.contains("is-out")) return;
+      candle.classList.add("is-out");
+      blowButton.disabled = true;
+      cakeWish.textContent = "Тілегіңіз қабыл болсын, Анашым! Әр күніңіз қуанышқа толып, жүрегіңіз әрдайым шаттыққа бөленсін. ♥";
+      scatterSymbols("♥", 24, "floating-heart", ["#b95568", "#d78c91", "#c49a5b"]);
+      if (!reducedMotion.matches) scatterPetals();
+    });
+  </script>
+</body>
+</html>
